@@ -1,1 +1,1 @@
-# MCP-Powered-Generative-AI-Job-Finder
+# MCP-Powered Generative AI Job Finder
