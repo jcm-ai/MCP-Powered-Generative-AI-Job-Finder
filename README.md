@@ -7,13 +7,13 @@ uv init
 ```
 ### Create a virtual environment using `uv` command
 ```
-uv venv
+uv venv aijob
 ```
 Activate with:
 ```
-source .venv/Scripts/activate
+source aijob/Scripts/activate
 ```
-Install requirements.txt file
+Install requirements.txt file inside aijob environment:
 ```
-uv add -r requirements.txt
+uv add -r requirements.txt --active --link-mode=copy
 ```
