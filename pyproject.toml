@@ -7,7 +7,9 @@ requires-python = ">=3.12"
 dependencies = [
     "apify-client>=2.0.0",
     "google-genai>=1.43.0",
+    "pillow>=11.3.0",
     "pymupdf>=1.26.4",
     "python-dotenv>=1.1.1",
+    "reportlab>=4.4.10",
     "streamlit>=1.49.1",
 ]
