@@ -2,9 +2,28 @@ import io
 import requests
 from PIL import Image
 from datetime import datetime
+import streamlit as st
+from google import genai
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
+from src.helper import extract_text_from_pdf, ask_gemini
+from src.job_api import fetch_linkedin_jobs, fetch_naukri_jobs
+
+# --- Configure Gemini ---
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+model = genai.GenerativeModel("gemini-1.5-flash")
+
+def ask_gemini(prompt: str, max_tokens: int = 500) -> str:
+    """Send prompt to Gemini and return response text."""
+    response = model.generate_content(
+        prompt,
+        generation_config=genai.types.GenerationConfig(
+            temperature=0.5,
+            max_output_tokens=max_tokens
+        )
+    )
+    return response.text.strip()
 
 # --- Helper: Fetch Company Logo ---
 def fetch_logo(company_name: str) -> Image.Image | None:
@@ -132,3 +151,30 @@ def create_pdf(user_name: str, summary: str, gaps: str, roadmap: str, linkedin_j
     c.save()
     buffer.seek(0)
     return buffer.getvalue()
+
+# --- Resume Analysis Workflow ---
+uploaded_file = st.file_uploader("📤 Upload your resume (PDF)", type=["pdf"])
+if uploaded_file and "resume_text" not in st.session_state:
+    with st.spinner("🔍 Extracting text from your resume..."):
+        st.session_state.resume_text = extract_text_from_pdf(uploaded_file)
+
+    with st.spinner("📝 Summarizing your resume..."):
+        st.session_state.summary = ask_gemini(
+            f"Summarize this resume highlighting the skills, education, and experience:\n\n{st.session_state.resume_text}",
+            max_tokens=500,
+        )
+
+    with st.spinner("📊 Identifying skill gaps..."):
+        st.session_state.gaps = ask_gemini(
+            f"Analyze this resume and highlight missing skills, certifications, and experiences needed for better job opportunities:\n\n{st.session_state.resume_text}",
+            max_tokens=400,
+        )
+
+    with st.spinner("🚀 Creating career roadmap..."):
+        st.session_state.roadmap = ask_gemini(
+            f"Based on this resume, suggest a future roadmap to improve career prospects "
+            f"(skills to learn, certifications needed, industry exposure):\n\n{st.session_state.resume_text}",
+            max_tokens=400,
+        )
+
+    st.success("✅ Resume analysis completed successfully!")
