@@ -17,3 +17,8 @@ Install requirements.txt file inside `aijob` environment:
 ```
 uv add -r requirements.txt --active --link-mode=copy
 ```
+
+### Run streamlit `app.py` file
+```
+streamlit run app.py
+```
