@@ -1,7 +1,7 @@
 import fitz  # PyMuPDF
 import os
 from dotenv import load_dotenv
-from google import genai
+import google.genai as genai
 
 load_dotenv()
 
@@ -9,7 +9,7 @@ load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 os.environ["GEMINI_API_KEY"] = GEMINI_API_KEY
 
-client = genai.Client(api_key="GEMINI_API_KEY")
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 
 def extract_text_from_pdf(uploaded_file):
@@ -29,23 +29,14 @@ def extract_text_from_pdf(uploaded_file):
     return text
 
 
-def ask_gemini(prompt, max_tokens=500):
-    """
-    Sends a prompt to the Gemini API and returns the response.
-    
-    Args:
-        prompt (str): The prompt to send to the Gemini API.
-        max_tokens (int): The maximum number of tokens in the response.
-        
-    Returns:
-        str: The response from the Gemini API.
-    """
+def ask_gemini(prompt: str, max_tokens: int = 500) -> str:
+    """Send prompt to Gemini and return response text."""
     response = client.models.generate_content(
-        model="gemini-2.0-flash",
-        messages=[{"role": "user", "content": prompt}],
-        generation_config=genai.types.GenerationConfig(
-            temperature=0.5,
-            max_output_tokens=max_tokens
-        )
+        model="gemini-2.5-flash",   # ✅ working model
+        contents=prompt,            # ✅ pass plain string, not messages=[]
+        config={
+            "max_output_tokens": max_tokens,
+            "temperature": 0.5
+        }
     )
-    return response.choices[0].message.content
+    return response.text.strip()
