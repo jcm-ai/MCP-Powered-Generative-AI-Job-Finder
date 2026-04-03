@@ -1,5 +1,5 @@
 # MCP-Powered Generative AI Job Finder
-
+![Final_outcome](screenshot-1774270508013.png)
 
 ### Project Setup by using `uv`
 ```
