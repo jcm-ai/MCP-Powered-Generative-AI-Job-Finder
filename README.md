@@ -1,6 +1,9 @@
 # MCP-Powered Generative AI Job Finder
 ![Final_outcome](screenshot-1774270508013.png)
 
+# MCP Server
+![alt text](mcp.gif)
+
 ### Project Setup by using `uv`
 ```
 uv init
